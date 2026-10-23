@@ -1,0 +1,101 @@
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  line-height: 1.5;
+  color: #1f2933;
+  background: #f4f6f8;
+}
+
+header {
+  background: #1e3a5f;
+  color: #fff;
+  padding: 1.25rem 1rem;
+  text-align: center;
+}
+header h1 { margin: 0; }
+.tagline { margin: 0.25rem 0 0; opacity: 0.85; font-size: 0.95rem; }
+
+main {
+  max-width: 680px;
+  margin: 1.5rem auto;
+  padding: 0 1rem;
+}
+
+.card {
+  background: #fff;
+  border-radius: 8px;
+  padding: 1.25rem;
+  margin-bottom: 1.5rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
+}
+.card h2 { margin-top: 0; font-size: 1.2rem; }
+
+label { display: block; margin: 0.75rem 0 0.25rem; font-weight: 600; }
+
+input[type="text"], textarea {
+  width: 100%;
+  padding: 0.55rem 0.65rem;
+  font: inherit;
+  border: 1px solid #b6c0cb;
+  border-radius: 6px;
+}
+input[type="text"]:focus, textarea:focus, button:focus-visible {
+  outline: 3px solid #8ab4f8;
+  outline-offset: 1px;
+}
+
+button {
+  font: inherit;
+  cursor: pointer;
+  border: none;
+  border-radius: 6px;
+  padding: 0.55rem 1.1rem;
+  background: #2563eb;
+  color: #fff;
+  margin-top: 0.9rem;
+}
+button:hover:not(:disabled) { background: #1d4ed8; }
+button:disabled { background: #94a3b8; cursor: not-allowed; }
+
+.delete-btn { background: #c0392b; margin-top: 0; padding: 0.3rem 0.8rem; font-size: 0.9rem; }
+.delete-btn:hover:not(:disabled) { background: #a02d21; }
+
+/* Status messages: empty, loading, success, error */
+#status {
+  margin: 0.9rem 0 0;
+  padding: 0;
+  min-height: 1.5rem;
+}
+#status.loading, #status.success, #status.error {
+  padding: 0.55rem 0.8rem;
+  border-radius: 6px;
+  border-left: 4px solid;
+}
+#status.loading { background: #eef2ff; color: #3730a3; border-color: #6366f1; }
+#status.success { background: #e6f6ec; color: #14532d; border-color: #22c55e; }
+#status.error   { background: #fdecea; color: #7f1d1d; border-color: #dc2626; }
+
+#notes-list { list-style: none; margin: 1rem 0 0; padding: 0; }
+
+.note {
+  border: 1px solid #dde3ea;
+  border-radius: 8px;
+  padding: 0.8rem 1rem;
+  margin-bottom: 0.75rem;
+  display: flex;
+  gap: 1rem;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+.note-title { margin: 0 0 0.25rem; font-size: 1.05rem; }
+.note-body  { margin: 0; color: #52606d; white-space: pre-wrap; }
+
+.empty-state {
+  text-align: center;
+  color: #7b8794;
+  padding: 1.5rem 0.5rem;
+  border: 2px dashed #cbd2d9;
+  border-radius: 8px;
+}
