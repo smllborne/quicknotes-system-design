@@ -144,6 +144,43 @@ async function handleSubmit(event) {
     submitBtn.disabled = false;
   }
 }
+
+// ---------- DELETE: remove a note ----------
+async function deleteNote(id) {
+  return request(API_URL + "/" + id, { method: "DELETE" });
+}
+
+/*
+ * Why delete works the way it does:
+ * JSONPlaceholder is a fake API. It accepts POST/DELETE requests and replies
+ * as if they worked, but it never actually stores or removes anything. Two
+ * consequences:
+ *   1. Every created note comes back with the SAME id (101), so the id cannot
+ *      identify a note in our list. We give each note a local `key` and use
+ *      that to find the right <li>.
+ *   2. Reloading the page or pressing "Load notes" brings the original posts
+ *      back, and notes we created disappear, because the server never kept them.
+ * So the approach is: send the real DELETE request (to prove the client works),
+ * and only when the server answers with a success status do we remove the note
+ * from our local list and the page. The page, not the server, is the source of
+ * truth for what the user sees. A real backend (see docs/api-design.md) would
+ * persist changes, and the client code would not need to change.
+ */
+async function handleDelete(note, button) {
+  button.disabled = true;
+  setStatus("Deleting note...", "loading");
+
+  try {
+    const result = await deleteNote(note.id);
+    notes = notes.filter(function (n) { return n.key !== note.key; });
+    renderNotes();
+    setStatus("Note deleted (status " + result.status + ").", "success");
+  } catch (error) {
+    button.disabled = false;
+    setStatus(friendlyError(error, "delete the note"), "error");
+  }
+}
+
 // ---------- Rendering ----------
 function renderNotes() {
   notesList.textContent = ""; // clears the list safely
@@ -177,7 +214,17 @@ function renderNotes() {
       content.appendChild(body);
     }
 
+    const deleteBtn = document.createElement("button");
+    deleteBtn.type = "button";
+    deleteBtn.className = "delete-btn";
+    deleteBtn.textContent = "Delete";
+    deleteBtn.setAttribute("aria-label", "Delete note: "+ note.title);
+    deleteBtn.addEventListener("click", function(){
+      handleDelete(note, deleteBtn);
+    });
+
     li.appendChild(content);
+    li.appendChild(deleteBtn);
     notesList.appendChild(li);
   });
 }
