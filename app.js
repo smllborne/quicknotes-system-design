@@ -3,11 +3,16 @@
 // specified in docs/api-design.md.
 
 const API_URL = "https://jsonplaceholder.typicode.com/posts";
+const MAX_TITLE_LENGTH = 100;
 
 // ---------- DOM references ----------
 const loadBtn = document.getElementById("load-btn");
 const statusEl = document.getElementById("status");
 const notesList = document.getElementById("notes-list");
+const noteForm = document.getElementById("note-form");
+const titleInput = document.getElementById("title-input");
+const bodyInput = document.getElementById("body-input");
+const submitBtn = document.getElementById("submit-btn");
 
 // ---------- Local state ----------
 // The list the user sees. Each entry: { key, id, title, body }.
@@ -87,6 +92,58 @@ async function handleLoad() {
   }
 }
 
+// ---------- POST: create a note ----------
+async function createNote(note) {
+  return request(API_URL, {
+    method: "POST",
+    headers: { "Content-Type": "application/json; charset=UTF-8" },
+    body: JSON.stringify(note),
+  });
+}
+
+// Returns an error message, or "" when the title is valid.
+function validateTitle(title) {
+  if (title.length === 0) {
+    return "Please enter a title for your note.";
+  }
+  if (title.length > MAX_TITLE_LENGTH) {
+    return "The title is too long (" + title.length + " characters). The maximum is " + MAX_TITLE_LENGTH + ".";
+  }
+  return "";
+}
+
+async function handleSubmit(event) {
+  event.preventDefault();
+
+  const title = titleInput.value.trim();
+  const body = bodyInput.value.trim();
+
+  const problem = validateTitle(title);
+  if (problem) {
+    setStatus(problem, "error");
+    titleInput.focus();
+    return;
+  }
+
+  submitBtn.disabled = true;
+  setStatus("Saving note...", "loading");
+
+  try {
+    const result = await createNote({ title: title, body: body, userId: 1 });
+    const created = result.data;
+
+    // Newest note goes to the top of the list.
+    notes.unshift({ key: nextKey++, id: created.id, title: created.title, body: created.body });
+    renderNotes();
+
+    setStatus("Note created (status " + result.status + ", id " + created.id + ").", "success");
+    noteForm.reset();
+  } catch (error) {
+    setStatus(friendlyError(error, "create the note"), "error");
+  } finally {
+    submitBtn.disabled = false;
+  }
+}
 // ---------- Rendering ----------
 function renderNotes() {
   notesList.textContent = ""; // clears the list safely
@@ -128,3 +185,4 @@ function renderNotes() {
 // ---------- Wire everything up ----------
 loadBtn.addEventListener("click", handleLoad);
 renderNotes(); // show the empty state on first load
+noteForm.addEventListener("submit", handleSubmit)
